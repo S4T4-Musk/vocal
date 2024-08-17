@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reconnaissance Vocale</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+           
+        }
+        .container {
+            max-width: 600px; 
+            background: white; 
+            padding: 20px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+            transition: background-color 0.3s; /* Transition pour un changement de couleur fluide */
+        }
+        h1 {
+            text-align: center;
+        }
+        .yelo{
+            display: inline-block;
+            text-decoration: none;  
+            color: #fff;
+            border: 1px solid #fff;
+            padding: 12px 34px;
+            font-size: 13px;
+            background: #23233f;
+            cursor: pointer;
+            margin: 5px;
+            text-align: center;
+            justify-items: center;
+        }
+        .yelo:hover{
+            border: 1px solid #abf436;
+            background: #15db30;
+            transition: 0.7s;
+        
+        }
+        button {
+            display: inline-block;
+            text-decoration: none;  
+            color: #fff;
+            border: 1px solid #fff;
+            padding: 12px 34px;
+            font-size: 13px;
+            background: #23233f;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            border: 1px solid #abf436;
+            background: #15db30;
+            transition: 0.7s;
+        }
+        #recognized-text, #recognized-text2, #recognized-text3 {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 1.2em;
+            text-align: center;
+        }
+        @keyframes flashGreen {
+            0% { background-color: white; }
+            50% { background-color: #10f32e; }
+            100% { background-color: white; }
+        }
+        @keyframes flashRed {
+            0% { background-color: white; }
+            50% { background-color: #f30909; }
+            100% { background-color: white; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="container">
+        <h1>Exercices vocale</h1>
+        
+        <!-- Exercice 1 -->
+        <div id="exercice1">
+            <p>Lisez le texte suivant à haute voix :</p>
+            <p id="text-to-read">Mais où va tout l'argent ? Pourquoi les routes sont- elles toujours défoncées ?</p>
+            <button id="start-button">Commencer l'enregistrement</button>
+            <button id="stop-button" disabled>Arrêter l'enregistrement</button>
+            <button id="reset-button">Réinitialiser</button>
+            <p class="result">Votre texte reconnu :</p>
+            <textarea id="recognized-text" rows="3" readonly></textarea>
+            <button id="check-button">Vérifier</button>
+            <div class="result" id="result"></div>
+        </div>
+        
+        <!-- Exercice 2 -->
+        <div id="exercice2" style="display: none;">
+            <p>Lisez le texte suivant à haute voix :</p>
+            <p id="text-to-read2">C'est en suivant les informations à la radio, à la télé, en lisant les journaux que j'apprends tout cela.</p>
+            <button id="start-button2">Commencer l'enregistrement</button>
+            <button id="stop-button2" disabled>Arrêter l'enregistrement</button>
+            <button id="reset-button2">Réinitialiser</button>
+            <p class="result">Votre texte reconnu :</p>
+            <textarea id="recognized-text2" rows="3" readonly></textarea>
+            <button id="check-button2">Vérifier</button>
+            <div class="result" id="result2"></div>
+        </div>
+
+        <!-- Exercice 3 -->
+        <div id="exercice3" style="display: none;">
+            <p>Lisez le texte suivant à haute voix :</p>
+            <p id="text-to-read3">je vais commencer à suivre les informations, les émissions telles que Dossier ouvert, Plein feu, Le débat africain</p>
+            <button id="start-button3">Commencer l'enregistrement</button>
+            <button id="stop-button3" disabled>Arrêter l'enregistrement</button>
+            <button id="reset-button3">Réinitialiser</button>
+            <p class="result">Votre texte reconnu :</p>
+            <textarea id="recognized-text3" rows="3" readonly></textarea>
+            <button id="check-button3">Vérifier</button>
+            <div class="result" id="result3"></div>
+        </div>
+        
+        <button id="back-button" style="display: none;">Retour</button>
+        <a class="yelo" id="next-button" href="https://sites.google.com/view/projet-de-la-lecture/programmes-de-lecture">voir une nouvelle  leçon </a>
+        
+    </div>
+
+    <script>
+        
+        let currentExercice = 1;
+let recognition; // Variable pour stocker l'objet de reconnaissance
+const nextButton = document.getElementById('next-button');
+const backButton = document.getElementById('back-button');
+const exercice1 = document.getElementById('exercice1');
+const exercice2 = document.getElementById('exercice2');
+const exercice3 = document.getElementById('exercice3');
+const container = document.getElementById('container');
+
+// Masquer le bouton "Suivant" au départ
+nextButton.style.display = 'none';
+
+// Fonction pour nettoyer la chaîne de caractères
+function cleanString(str) {
+    return str.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").replace(/\s+/g, " ").trim();
+}
+
+// Fonction pour passer à l'exercice suivant
+function nextExercise() {
+    if (recognition) {
+        recognition.stop(); // Arrête la reconnaissance vocale
+    }
+
+    if (currentExercice === 1) {
+        exercice1.style.display = 'none';
+        exercice2.style.display = 'block';
+        currentExercice++;
+        backButton.style.display = 'block'; // Affiche le bouton Retour
+    } else if (currentExercice === 2) {
+        exercice2.style.display = 'none';
+        exercice3.style.display = 'block';
+        currentExercice++;
+    } else if (currentExercice === 3) {
+        // Ici, on ne passe pas à un nouvel exercice, car c'est le dernier
+        nextButton.style.display = 'none'; // Masquer le bouton "Suivant"
+    }
+}
+
+// Fonction de vérification du texte
+function checkText(recognizedTextId, textId, resultId) {
+    const recognizedText = document.getElementById(recognizedTextId).value;
+    const originalText = document.getElementById(textId).innerText;
+    const resultDiv = document.getElementById(resultId);
+    const messageDiv = document.getElementById('message'); // Div pour afficher les messages
+
+    // Nettoyer et transformer en minuscules les deux textes avant la comparaison
+    const cleanedRecognizedText = cleanString(recognizedText).toLowerCase();
+    const cleanedOriginalText = cleanString(originalText).toLowerCase();
+
+    // Clignotement à chaque vérification
+    if (cleanedRecognizedText === cleanedOriginalText) {
+        resultDiv.innerText = "Bravo ! Votre texte est correct.";
+        flashContainer('green'); // Clignote en vert
+
+        // Vérifier si c'est l'exercice 3
+        if (currentExercice === 3) {
+            nextButton.style.display = 'block'; // Affiche le bouton "Suivant" uniquement après avoir réussi l'exercice 3
+            backButton.style.display = 'none'; // Masquer le bouton Retour
+            document.getElementById('check-button').style.display = 'none'; // Masquer le bouton Vérifier
+        } else {
+            nextExercise(); // Passe directement à l'exercice suivant
+        }
+    } else {
+        resultDiv.innerText = "Désolé, votre texte ne correspond pas.";
+        flashContainer('red'); // Clignote en rouge
+        messageDiv.innerText = "Il faut d'abord réussir cet exercice avant de passer à l'exercice suivant."; // Message d'erreur
+        nextButton.style.display = 'none'; // Assurez-vous que le bouton "Suivant" est masqué
+    }
+}
+
+// Fonction pour faire clignoter la .container
+function flashContainer(color) {
+    container.style.animation = ''; // Réinitialise l'animation
+    container.style.animation = `flash${color.charAt(0).toUpperCase() + color.slice(1)} 0.5s 2`; // Applique l'animation
+}
+
+// Ajout des événements pour les boutons de vérification
+document.getElementById('check-button').addEventListener('click', function() {
+    checkText('recognized-text', 'text-to-read', 'result');
+});
+
+document.getElementById('check-button2').addEventListener('click', function() {
+    checkText('recognized-text2', 'text-to-read2', 'result2');
+});
+
+document.getElementById('check-button3').addEventListener('click', function() {
+    checkText('recognized-text3', 'text-to-read3', 'result3');
+});
+
+// Ajout des événements pour les boutons de navigation
+nextButton.addEventListener('click', function() {
+    nextExercise();
+});
+
+// Fonction de reconnaissance vocale
+function startRecognition(buttonId, resultId, textId) {
+    const button = document.getElementById(buttonId);
+    const stopButton = document.getElementById(buttonId.replace('start', 'stop'));
+    const recognizedTextArea = document.getElementById(resultId);
+    const textToRead = document.getElementById(textId).innerText;
+
+    recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = 'fr-FR';
+    recognition.interimResults = false;
+    recognition.continuous = true; // Active la reconnaissance continue
+    recognition.maxAlternatives = 1; // Nombre maximum d'alternatives de reconnaissance
+
+    button.disabled = true;
+    stopButton.disabled = false;
+
+    recognition.onstart = function() {
+        console.log("Reconnaissance vocale en cours...");
+    };
+
+    recognition.onresult = function(event) {
+        const transcript = event.results[event.results.length - 1][0].transcript;
+        recognizedTextArea.value += transcript + " ";
+        console.log("Texte reconnu : ", transcript);
+    };
+
+    recognition.onend = function() {
+        button.disabled = false;
+        stopButton.disabled = true;
+        console.log("Reconnaissance vocale arrêtée.");
+    };
+
+    recognition.onerror = function(event) {
+        console.error("Erreur de reconnaissance : ", event.error);
+        button.disabled = false;
+        stopButton.disabled = true;
+    };
+
+    stopButton.onclick = function() {
+        recognition.stop(); // Arrête la reconnaissance vocale
+    };
+
+    recognition.start();
+}
+
+// Ajout des événements pour les boutons d'enregistrement
+document.getElementById('start-button').addEventListener('click', function() {
+    startRecognition('start-button', 'recognized-text', 'text-to-read');
+});
+
+document.getElementById('start-button2').addEventListener('click', function() {
+    startRecognition('start-button2', 'recognized-text2', 'text-to-read2');
+});
+
+document.getElementById('start-button3').addEventListener('click', function() {
+    startRecognition('start-button3', 'recognized-text3', 'text-to-read3');
+});
+
+// Fonction de réinitialisation
+function resetText(resultId, recognizedTextId) {
+    if (recognition) {
+        recognition.stop(); // Arrête la reconnaissance vocale
+    }
+    document.getElementById(resultId).innerText = '';
+    document.getElementById(recognizedTextId).value = '';
+    document.getElementById('message').innerText = ''; // Réinitialiser le message
+}
+
+// Ajout des événements pour les boutons de réinitialisation
+document.getElementById('reset-button').addEventListener('click', function() {
+    resetText('result', 'recognized-text');
+});
+
+document.getElementById('reset-button2').addEventListener('click', function() {
+    resetText('result2', 'recognized-text2');
+});
+
+document.getElementById('reset-button3').addEventListener('click', function() {
+    resetText('result3', 'recognized-text3');
+});
+    
+    </script>
+</body>
+</html>
