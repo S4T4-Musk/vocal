@@ -5,71 +5,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reconnaissance Vocale</title>
     <style>
+        
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Comic Sans MS', cursive, sans-serif; /* Police amusante */
+            background-color: transparent; /* Couleur de fond douce */
             display: flex;
             justify-content: center;
             align-items: center;
-           
+            height: 100vh; /* Prend toute la hauteur de la fenêtre */
+            margin: 0;
         }
         .container {
             max-width: 600px; 
-            background: white; 
+            background: #ffffff; 
             padding: 20px; 
-            border-radius: 8px; 
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
-            transition: background-color 0.3s; /* Transition pour un changement de couleur fluide */
+            border-radius: 20px; /* Coins arrondis */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); 
+            text-align: center; /* Centrer le texte */
         }
         h1 {
-            text-align: center;
+            color: #ff4081; /* Couleur vive pour le titre */
+            font-size: 2.5em; /* Taille de police plus grande */
         }
-        .yelo{
+        button, .yelo {
             display: inline-block;
             text-decoration: none;  
             color: #fff;
-            border: 1px solid #fff;
-            padding: 12px 34px;
-            font-size: 13px;
-            background: #23233f;
+            border: none; /* Pas de bordure */
+            padding: 15px 30px; /* Plus de padding pour un bouton plus grand */
+            font-size: 1.2em; /* Taille de police plus grande */
+            background: #ff4081; /* Couleur de fond vive */
+            border-radius: 10px; /* Coins arrondis */
             cursor: pointer;
-            margin: 5px;
-            text-align: center;
-            justify-items: center;
+            margin: 10px;
+            transition: background 0.3s, transform 0.3s; /* Transition douce */
         }
-        .yelo:hover{
-            border: 1px solid #abf436;
-            background: #15db30;
-            transition: 0.7s;
-        
-        }
-        button {
-            display: inline-block;
-            text-decoration: none;  
-            color: #fff;
-            border: 1px solid #fff;
-            padding: 12px 34px;
-            font-size: 13px;
-            background: #23233f;
-            cursor: pointer;
-            margin: 5px;
-        }
-        button:hover {
-            border: 1px solid #abf436;
-            background: #15db30;
-            transition: 0.7s;
+        button:hover, .yelo:hover {
+            background: #ff80ab; /* Couleur plus claire au survol */
+            transform: scale(1.05); /* Légère augmentation de la taille au survol */
         }
         #recognized-text, #recognized-text2, #recognized-text3 {
             width: 100%;
             padding: 10px;
             margin-top: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            border: 2px solid #ff4081; /* Bordure colorée */
+            border-radius: 10px; /* Coins arrondis */
+            font-size: 1em; /* Taille de police standard */
         }
         .result {
             margin-top: 20px;
             font-size: 1.2em;
-            text-align: center;
+            color: #00796b; /* Couleur pour le texte de résultat */
         }
         @keyframes flashGreen {
             0% { background-color: white; }
@@ -81,11 +67,12 @@
             50% { background-color: #f30909; }
             100% { background-color: white; }
         }
+    
     </style>
 </head>
 <body>
     <div class="container" id="container">
-        <h1>Exercices vocale</h1>
+        <h1>Exercices Vocaux</h1>
         
         <!-- Exercice 1 -->
         <div id="exercice1">
